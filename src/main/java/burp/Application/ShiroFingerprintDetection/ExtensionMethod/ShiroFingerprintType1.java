@@ -1,17 +1,9 @@
 package burp.Application.ShiroFingerprintDetection.ExtensionMethod;
 
-import java.net.URL;
+import burp.*;
+
 import java.io.PrintWriter;
-
-import burp.IBurpExtenderCallbacks;
-import burp.IHttpRequestResponse;
-import burp.IExtensionHelpers;
-import burp.IHttpService;
-import burp.IParameter;
-import burp.ICookie;
-import burp.IScanIssue;
-
-import burp.CustomScanIssue;
+import java.net.URL;
 
 public class ShiroFingerprintType1 extends ShiroFingerprintTypeAbstract {
     private IBurpExtenderCallbacks callbacks;
@@ -44,12 +36,16 @@ public class ShiroFingerprintType1 extends ShiroFingerprintTypeAbstract {
 
         IHttpService httpService = this.baseRequestResponse.getHttpService();
 
-        IParameter newParameter = this.helpers.buildParameter(this.rememberMeCookieName, this.rememberMeCookieValue, (byte)2);
+        // 创建cookie参数
+        IParameter newParameter = this.helpers.buildParameter(this.rememberMeCookieName, this.rememberMeCookieValue, (byte) 2);
+        // 利用新的参数，创建新的请求
         byte[] newRequest = this.helpers.updateParameter(this.baseRequestResponse.getRequest(), newParameter);
+        // 构造新请求
         IHttpRequestResponse newHttpRequestResponse = this.callbacks.makeHttpRequest(httpService, newRequest);
 
         this.setHttpRequestResponse(newHttpRequestResponse);
 
+        PrintWriter stdout = new PrintWriter(this.callbacks.getStdout(), true);
         for (ICookie c : this.helpers.analyzeResponse(newHttpRequestResponse.getResponse()).getCookies()) {
             if (c.getName().equals(this.rememberMeCookieName)) {
                 this.setShiroFingerprint();
@@ -92,7 +88,7 @@ public class ShiroFingerprintType1 extends ShiroFingerprintTypeAbstract {
         return new CustomScanIssue(
                 newHttpRequestResponse.getHttpService(),
                 newHttpRequestUrl,
-                new IHttpRequestResponse[] { newHttpRequestResponse },
+                new IHttpRequestResponse[]{newHttpRequestResponse},
                 "ShiroFramework",
                 detail,
                 "Information");

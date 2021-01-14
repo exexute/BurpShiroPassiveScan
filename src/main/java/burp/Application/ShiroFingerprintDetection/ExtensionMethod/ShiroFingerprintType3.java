@@ -1,29 +1,24 @@
 package burp.Application.ShiroFingerprintDetection.ExtensionMethod;
 
-import java.net.URL;
+import burp.*;
+
 import java.io.PrintWriter;
-
-import burp.IBurpExtenderCallbacks;
-import burp.IHttpRequestResponse;
-import burp.IExtensionHelpers;
-import burp.IParameter;
-import burp.ICookie;
-import burp.IScanIssue;
-
-import burp.CustomScanIssue;
+import java.net.URL;
 
 public class ShiroFingerprintType3 extends ShiroFingerprintTypeAbstract {
     private IBurpExtenderCallbacks callbacks;
-    private IExtensionHelpers helpers;
+    private final IExtensionHelpers helpers;
 
-    private IHttpRequestResponse baseRequestResponse;
+    private final IHttpRequestResponse baseRequestResponse;
 
-    private String rememberMeCookieName = "rememberMe";
-    private String rememberMeCookieValue = "3";
+    private final static String REMEMBER_ME_COOKIE_NAME = "rememberMe";
+    private final static String REMEMBER_ME_COOKIE_VALUE = "3";
+    private final PrintWriter stdout;
 
     public ShiroFingerprintType3(IBurpExtenderCallbacks callbacks, IHttpRequestResponse baseRequestResponse) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
+        this.stdout = new PrintWriter(this.callbacks.getStdout(), true);
 
         this.baseRequestResponse = baseRequestResponse;
 
@@ -40,7 +35,7 @@ public class ShiroFingerprintType3 extends ShiroFingerprintTypeAbstract {
             if (p.getType() != 2) {
                 continue;
             }
-            if (!p.getName().equals(this.rememberMeCookieName)) {
+            if (!p.getName().equals(REMEMBER_ME_COOKIE_NAME)) {
                 continue;
             }
             if (p.getValue() == null || p.getValue().length() <= 0) {
@@ -48,7 +43,7 @@ public class ShiroFingerprintType3 extends ShiroFingerprintTypeAbstract {
             }
 
             for (ICookie c : this.helpers.analyzeResponse(this.baseRequestResponse.getResponse()).getCookies()) {
-                if (c.getName().equals(this.rememberMeCookieName)) {
+                if (c.getName().equals(REMEMBER_ME_COOKIE_NAME)) {
                     if (c.getValue().equals("deleteMe")) {
                         this.registerExtension();
                         return;
@@ -58,20 +53,26 @@ public class ShiroFingerprintType3 extends ShiroFingerprintTypeAbstract {
         }
     }
 
+    /**
+     * 运行插件，检查是否存在deleteMe
+     */
     public void runExtension() {
         if (!this.isRunExtension()) {
+            this.stdout.println("插件ShiroFingerprintType3未运行");
             return;
         }
 
         this.setHttpRequestResponse(this.baseRequestResponse);
 
+        this.stdout.println("插件：ShiroFingerprintType3，检查响应体是否带有deleteMe");
         for (ICookie c : this.helpers.analyzeResponse(this.baseRequestResponse.getResponse()).getCookies()) {
-            if (c.getName().equals(this.rememberMeCookieName)) {
-                if (c.getValue().equals("deleteMe")) {
+            this.stdout.println("插件：ShiroFingerprintType3，检查响应体的Cookie，Cookie名称：" + c.getName());
+            if (c.getName().equals(REMEMBER_ME_COOKIE_NAME)) {
+                if ("deleteMe".equals(c.getValue())) {
                     this.setShiroFingerprint();
 
-                    this.setRequestDefaultRememberMeCookieName(this.rememberMeCookieName);
-                    this.setRequestDefaultRememberMeCookieValue(this.rememberMeCookieValue);
+                    this.setRequestDefaultRememberMeCookieName(REMEMBER_ME_COOKIE_NAME);
+                    this.setRequestDefaultRememberMeCookieValue(REMEMBER_ME_COOKIE_VALUE);
 
                     this.setResponseDefaultRememberMeCookieName(c.getName());
                     this.setResponseDefaultRememberMeCookieValue(c.getValue());
@@ -109,7 +110,7 @@ public class ShiroFingerprintType3 extends ShiroFingerprintTypeAbstract {
         return new CustomScanIssue(
                 baseHttpRequestResponse.getHttpService(),
                 newHttpRequestUrl,
-                new IHttpRequestResponse[] { baseHttpRequestResponse },
+                new IHttpRequestResponse[]{baseHttpRequestResponse},
                 "ShiroFramework",
                 detail,
                 "Information");

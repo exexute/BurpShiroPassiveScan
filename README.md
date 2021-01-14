@@ -100,3 +100,9 @@ gcm就是最新出的
 - [+] found shiro key: xxxxxx = 扫描出了 shiro key
 
 注意: 发生异常错误的时候,不用担心下次不会扫描了,下次访问该站点的时候依然会尝试进行shiro key扫描,直到扫描完毕为止
+
+# todo
+增加检出漏扫：
+- shiro 550
+- shiro 720
+- shiro 权限绕过

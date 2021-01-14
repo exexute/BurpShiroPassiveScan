@@ -1,9 +1,9 @@
 package burp.Application.ShiroFingerprintDetection.ExtensionMethod;
 
-import java.net.URL;
-import java.io.PrintWriter;
-
 import burp.*;
+
+import java.io.PrintWriter;
+import java.net.URL;
 
 public class ShiroFingerprintType2 extends ShiroFingerprintTypeAbstract {
     private IBurpExtenderCallbacks callbacks;
@@ -70,6 +70,7 @@ public class ShiroFingerprintType2 extends ShiroFingerprintTypeAbstract {
 
     /**
      * 获取新的http请求响应
+     *
      * @param rememberMeCookieName
      * @param rememberMeCookieValue
      * @return IHttpRequestResponse
@@ -79,12 +80,17 @@ public class ShiroFingerprintType2 extends ShiroFingerprintTypeAbstract {
         IParameter newParameter = this.helpers.buildParameter(
                 rememberMeCookieName,
                 rememberMeCookieValue,
-                (byte)2);
+                (byte) 2);
         byte[] newRequest = this.helpers.updateParameter(this.baseRequestResponse.getRequest(), newParameter);
         IHttpRequestResponse newHttpRequestResponse = this.callbacks.makeHttpRequest(httpService, newRequest);
         return newHttpRequestResponse;
     }
 
+    /**
+     * 报告自定义的扫描漏洞
+     *
+     * @return
+     */
     @Override
     public IScanIssue export() {
         if (!this.isRunExtension()) {
@@ -113,7 +119,7 @@ public class ShiroFingerprintType2 extends ShiroFingerprintTypeAbstract {
         return new CustomScanIssue(
                 baseHttpRequestResponse.getHttpService(),
                 newHttpRequestUrl,
-                new IHttpRequestResponse[] { baseHttpRequestResponse },
+                new IHttpRequestResponse[]{baseHttpRequestResponse},
                 "ShiroFramework",
                 detail,
                 "Information");
@@ -136,14 +142,11 @@ public class ShiroFingerprintType2 extends ShiroFingerprintTypeAbstract {
 
         PrintWriter stdout = new PrintWriter(this.callbacks.getStdout(), true);
 
-        stdout.println("");
         stdout.println("=============shiro指纹详情============");
-        stdout.println("你好呀~ (≧ω≦*)喵~");
-        stdout.println("这边检测到有一个站点使用了 shiro框架 喵~");
-        stdout.println(String.format("负责检测的插件: %s", this.getExtensionName()));
+        stdout.println(String.format("插件: %s", this.getExtensionName()));
         stdout.println(String.format("url: %s", baseHttpRequestUrl));
         stdout.println(String.format("请求方法: %s", baseHttpRequestMethod));
-        stdout.println(String.format("页面http状态: %d", baseHttpResponseStatusCode));
+        stdout.println(String.format("响应状态码: %d", baseHttpResponseStatusCode));
         stdout.println("注意: 原始请求响应返回了 shiro 关键字所以没有发送新请求");
         stdout.println(String.format("请求对应的cookie: %s=%s",
                 this.getRequestDefaultRememberMeCookieName(),

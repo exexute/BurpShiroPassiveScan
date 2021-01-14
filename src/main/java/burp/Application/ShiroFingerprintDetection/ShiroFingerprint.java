@@ -1,9 +1,11 @@
 package burp.Application.ShiroFingerprintDetection;
 
+import burp.Application.ShiroFingerprintDetection.ExtensionMethod.ShiroFingerprintType1;
+import burp.Application.ShiroFingerprintDetection.ExtensionMethod.ShiroFingerprintType2;
+import burp.Application.ShiroFingerprintDetection.ExtensionMethod.ShiroFingerprintType3;
+import burp.Application.ShiroFingerprintDetection.ExtensionMethod.ShiroFingerprintTypeInterface;
 import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
-
-import burp.Application.ShiroFingerprintDetection.ExtensionMethod.*;
 
 public class ShiroFingerprint {
     private IBurpExtenderCallbacks callbacks;
@@ -21,6 +23,7 @@ public class ShiroFingerprint {
 
     private ShiroFingerprintTypeInterface setShiroFingerprintType() {
         // 原始请求 cookie 的 key 带了 rememberMe 则进入该流程
+        // 检查原始请求是否带有deleteMe
         ShiroFingerprintType3 shiroFingerprintType3 = new ShiroFingerprintType3(this.callbacks, this.baseRequestResponse);
         if (shiroFingerprintType3.isRunExtension()) {
             shiroFingerprintType3.runExtension();

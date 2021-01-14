@@ -1,23 +1,21 @@
 package burp;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.PrintWriter;
-
+import burp.Application.ShiroCipherKeyDetection.ShiroCipherKey;
+import burp.Application.ShiroFingerprintDetection.ShiroFingerprint;
 import burp.Bootstrap.DomainNameRepeat;
 import burp.Bootstrap.StringTotalNumber;
 import burp.Bootstrap.UrlRepeat;
-
-import burp.Application.ShiroFingerprintDetection.ShiroFingerprint;
-import burp.Application.ShiroCipherKeyDetection.ShiroCipherKey;
-
 import burp.CustomErrorException.DiffPageException;
 import burp.CustomErrorException.TaskTimeoutException;
 
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BurpExtender implements IBurpExtender, IScannerCheck {
 
-    public static String NAME = "ShiroScan";
+    public static String NAME = "OwefShiroScan";
     public static String VERSION = "1.7.6";
 
     private IBurpExtenderCallbacks callbacks;
@@ -52,19 +50,21 @@ public class BurpExtender implements IBurpExtender, IScannerCheck {
         this.stdout.println("===================================");
         this.stdout.println(String.format("%s 加载成功", NAME));
         this.stdout.println(String.format("版本: %s", VERSION));
-        this.stdout.println("作者: P喵呜-PHPoop");
-        this.stdout.println("QQ: 3303003493");
-        this.stdout.println("微信: a3303003493");
-        this.stdout.println("GitHub: https://github.com/pmiaowu");
-        this.stdout.println("Blog: https://www.yuque.com/pmiaowu");
+        this.stdout.println("作者: owefsad");
+        this.stdout.println("QQ: 1547147759");
+        this.stdout.println("微信: owefsad");
+        this.stdout.println("GitHub: https://github.com/exexute");
+        this.stdout.println("Blog: https://exexute.github.io");
         this.stdout.println("===================================");
     }
 
     @Override
     public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
+
         List<IScanIssue> issues = new ArrayList<IScanIssue>();
 
         URL baseHttpRequestUrl = this.helpers.analyzeRequest(baseRequestResponse).getUrl();
+        this.stdout.println("进入被动扫描，url：" + baseHttpRequestUrl.toString());
 
         // 基础请求域名构造
         String baseRequestProtocol = baseRequestResponse.getHttpService().getProtocol();

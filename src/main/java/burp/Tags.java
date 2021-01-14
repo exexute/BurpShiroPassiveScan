@@ -266,6 +266,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
             super(tableModel);
         }
 
+        @Override
         public void changeSelection(int row, int col, boolean toggle, boolean extend) {
             Tags.TablesData dataEntry = Tags.this.Udatas.get(convertRowIndexToModel(row));
             HRequestTextEditor.setMessage(dataEntry.requestResponse.getRequest(), true);
